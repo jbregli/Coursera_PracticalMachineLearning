@@ -19,7 +19,11 @@ inTrain <- createDataPartition(dataset$classe, p=0.75, list=FALSE)
 train_set <- dataset[inTrain,]
 valid_set <- dataset[-inTrain,]
 
-# Test 1: Random forest classifier:
+folds <- createFolds(y=dataset$classe,k=10,
+                     list=TRUE,returnTrain=TRUE)
+sapply(folds,length)
+
+# Test 1: Random forest classifier using cross validation contol
 ctrl <- trainControl(allowParallel=TRUE, method="cv", number=4)
 model <- train(classe ~ ., data=train_set, model="rf", trControl=ctrl)
 predictor <- predict(model, newdata=valid_set)
@@ -58,4 +62,15 @@ sum(predictor_svm == valid_set$classe) / length(predictor_svm)
 confusionMatrix(valid_set$classe, predictor_svm)$table
 
 # Classification for test_set:
-predict(model, newdata=dataset_test)
+results <- predict(model, newdata=dataset_test)
+
+pml_write_files = function(x){
+  n = length(x)
+  for(i in 1:n){
+    filename = paste0("problem_id_",i,".txt")
+    write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+  }
+}
+
+pml_write_files(results)
+  

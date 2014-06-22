@@ -82,7 +82,7 @@ end.rcode-->
 We train a <b>Random Forest Classifier</b>.</p>
 
 <!--begin.rcode
-# Test 1: Random forest classifier:
+# Test 1: Random forest classifier using cross validation control:
 ctrl <- trainControl(allowParallel=TRUE, method="cv", number=4)
 model <- train(classe ~ ., data=train_set, model="rf", trControl=ctrl)
 predictor <- predict(model, newdata=valid_set)
